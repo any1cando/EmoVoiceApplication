@@ -3,13 +3,14 @@ package com.panevrn.emovoiceapplication.voice
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.AudioFormat
-import android.media.AudioRecord
-import android.media.MediaRecorder
+import android.media.*
 import android.os.Environment
 import android.util.Log
 import androidx.core.app.ActivityCompat
-import java.io.*
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import kotlin.math.abs
 
 class PcmRecorder(private val context: Context) {
     private var isRecording = false
@@ -28,25 +29,54 @@ class PcmRecorder(private val context: Context) {
                 Manifest.permission.RECORD_AUDIO
             ) != PackageManager.PERMISSION_GRANTED
         ) {
+            Log.e("PCM_RECORDER", "❌ Нет разрешения RECORD_AUDIO")
             return
         }
-        audioRecord = AudioRecord(
-            MediaRecorder.AudioSource.MIC,
-            sampleRate,
-            channelConfig,
-            audioFormat,
-            bufferSize
+
+        // Запрашиваем аудио-фокус
+        val audioManager = context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        val result = audioManager.requestAudioFocus(
+            AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+                .setAudioAttributes(
+                    AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_VOICE_COMMUNICATION)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                        .build()
+                )
+                .setOnAudioFocusChangeListener { }
+                .build()
         )
+        Log.d("PCM_DEBUG", "Аудио фокус: $result")
+
+        audioRecord = AudioRecord.Builder()
+            .setAudioSource(MediaRecorder.AudioSource.MIC)
+            .setAudioFormat(
+                AudioFormat.Builder()
+                    .setEncoding(audioFormat)
+                    .setSampleRate(sampleRate)
+                    .setChannelMask(channelConfig)
+                    .build()
+            )
+            .setBufferSizeInBytes(bufferSize * 2)
+            .build()
 
         audioRecord.startRecording()
+        Log.d("PCM_DEBUG", "Состояние записи: ${audioRecord.recordingState}")
+        if (audioRecord.recordingState != AudioRecord.RECORDSTATE_RECORDING) {
+            Log.e("PCM_DEBUG", "‼️ AudioRecord не начал записывать!")
+        }
+        Log.d("PCM_RECORDER", "Старт записи. Файл: ${pcmFile.absolutePath}")
         isRecording = true
 
         Thread {
             try {
+                Log.d("PCM_RECORDER", "Начат поток записи")
                 FileOutputStream(pcmFile).use { outputStream ->
-                    val buffer = ShortArray(bufferSize / 2) // Используем ShortArray для точных данных
+                    val buffer = ShortArray(bufferSize / 2)
                     while (isRecording) {
                         val read = audioRecord.read(buffer, 0, buffer.size)
+                        val maxAmplitude = buffer.take(read).maxOfOrNull { abs(it.toInt()) } ?: 0
+                        Log.d("PCM_DEBUG", "Макс. амплитуда: $maxAmplitude")
                         if (read > 0) {
                             val byteBuffer = ByteArray(read * 2)
                             for (i in 0 until read) {

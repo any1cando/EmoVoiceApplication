@@ -2,69 +2,87 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#F5F0E1"
     tools:context=".ui.MainActivity">
 
-    <TextView
-        android:id="@+id/tvInfo"
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="?attr/actionBarSize"
+        android:background="#3E2723"
+        android:title="Распознавание эмоций"
+        android:titleTextColor="@android:color/white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="250dp"
-        android:gravity="center"
-        android:padding="24dp"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        android:text="No Reaction"
-        android:textSize="24sp"
-        android:textStyle="bold"
-
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardResult"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:layout_marginTop="96dp"
+        android:layout_marginHorizontal="16dp"
+        android:padding="8dp"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No Reaction"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#3E2723"
+            android:gravity="center"
+            android:padding="16dp"
+            android:maxWidth="300dp"
+            android:ellipsize="end"
+            android:singleLine="false"
+            android:breakStrategy="simple"/>
+    </com.google.android.material.card.MaterialCardView>
 
     <ProgressBar
         android:id="@+id/pbLoad"
-        app:layout_constraintTop_toBottomOf="@id/tvInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        app:layout_constraintTop_toBottomOf="@id/cardResult"
         app:layout_constraintBottom_toTopOf="@id/recordButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-
-        android:visibility="gone"
-
-        style="@android:style/Widget.DeviceDefault.ProgressBar.Large"
-        />
-
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/recordButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="200dp"
-
-        android:text="Record Voice"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
+        android:text="🎙️ Запись голоса"
+        android:backgroundTint="#D2691E"
+        android:textColor="@android:color/white"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toTopOf="@id/stopButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/stopButton"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="100dp"
-        android:enabled="false"
-
-        android:text="Stop Voice"
-
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        />
-
+        android:text="⏹ Стоп запись"
+        android:backgroundTint="#6D7F52"
+        android:textColor="@android:color/white"
+        android:enabled="false"
+        app:cornerRadius="24dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="32dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

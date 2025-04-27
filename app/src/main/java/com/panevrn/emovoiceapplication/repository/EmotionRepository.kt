@@ -17,7 +17,6 @@ class EmotionRepository {
             try {
                 val requestFile = audioFile.asRequestBody("audio/wav".toMediaTypeOrNull())
                 val filePart = MultipartBody.Part.createFormData("file", audioFile.name, requestFile)
-
                 val response = RetrofitClient.apiService.uploadAudio(filePart).execute()
 
                 if (response.isSuccessful) {
